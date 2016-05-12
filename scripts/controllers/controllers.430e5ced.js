@@ -3341,7 +3341,7 @@
 
             scope.submit = function () {
                 var reqDate = dateFilter(scope.first.date, scope.df);
-                scope.formData.code = Math.random().toString(36).substring(7);
+                scope.formData.code = '1234';
 
                 this.formData.locale = scope.optlang.code;
                 this.formData.active = this.formData.active || false;
@@ -3689,6 +3689,10 @@
                 } else if (depositTypeCode === "depositAccountType.recurringDeposit") {
                     location.path('/viewrecurringdepositaccount/' + id);
                 }
+            };
+            
+             scope.viewClientAddress = function (addressId){
+                location.path('/client/'+scope.client.id+'/viewaddress/'+addressId);
             };
 
             scope.haveFile = [];
@@ -9564,7 +9568,7 @@
                   scope.formData.net = scope.formData.gross - scope.formData.stone;
                   scope.formData.value = scope.gr * ((scope.formData.net*((100-scope.formData.impurity)/100)));
                 }else if (scope.formData.collateralTypeId == 24) {
-                  scope.formData.value = scope.formData.actualcost * (85 / 100) ;
+                  scope.formData.value = scope.formData.actualcost * (100 / 100) ;
                 }else {
                   scope.formData.value = scope.formData.actualcost*(60/100);
                 }
@@ -10148,12 +10152,13 @@
 
                                          rounded = Math.ceil(someWhere * 100) / 100;
                  console.log(rounded);
-                 this.formData.interestRatePerPeriod = Math.round(rounded);
-
+                 //this.formData.interestRatePerPeriod = Math.round(rounded);
+		this.formData.interestRatePerPeriod = rounded;
 
                     if(scope.formData.advanceEmiN > 0){
                 scope.inte = scope.formData.principal *  scope.formData.flatinterestRatePerPeriod / 100 / 12 * scope.formData.numberOfRepayments;
                 scope.emi = (scope.inte + scope.formData.principal) / scope.formData.numberOfRepayments;
+		console.log(scope.emi);
                 //this.formData.disbursementData.expectedDisbursementDate = reqSecondDate;
                 scope.loan_outstanding = this.formData.principal - (this.formData.advanceEmiN * scope.emi);
                 this.formData.fixedEmiAmount = Math.round(scope.emi);
@@ -10287,6 +10292,50 @@
     });
     mifosX.ng.application.controller('EditLoanCollateralController', ['$scope', '$rootScope','ResourceFactory', '$routeParams', '$location', mifosX.controllers.EditLoanCollateralController]).run(function ($log) {
         $log.info("EditLoanCollateralController initialized");
+    });
+}(mifosX.controllers || {}));
+;(function (module) {
+    mifosX.controllers = _.extend(module, {
+        EditClientAddressController: function (scope,$rootScope, resourceFactory, routeParams, location) {
+
+          scope.addressTypes = [];
+          scope.stateTypes = [];
+          scope.formData = {};
+            scope.clientId = routeParams.clientId;
+            scope.addressId = routeParams.id;
+
+
+
+
+            resourceFactory.clientAddressResource.get({ clientId: scope.clientId, id: scope.addressId }, function (data) {
+                scope.formData = {addressTypeId: data.addressType.id,address_line: data.address_line, address_line_two: data.address_line_two, isBoth: data.isBoth, landmark: data.landmark, city: data.city,pincode: data.pincode, stateTypeId: data.stateType.id};
+                
+            });
+
+            resourceFactory.clientAddressTemplateResource.get({clientId: scope.clientId}, function (data) {
+                scope.addressTypes = data.allowedAddressTypes;
+                scope.formData.addressTypeId = data.allowedAddressTypes[0].id;
+                
+                scope.stateTypes = data.allowedStateTypes;
+                scope.formData.stateTypeId = data.allowedStateTypes[0].id;
+            });
+
+
+            scope.cancel = function () {
+                location.path('/viewclient/' + scope.clientId);
+            };
+
+            scope.submit = function () {
+               // this.formData.locale = scope.optlang.code;
+                resourceFactory.clientAddressResource.put({clientId: scope.clientId, id: scope.addressId}, this.formData, function (data) {
+                    location.path('/viewclient/' + data.clientId);
+                });
+            };
+
+        }
+    });
+    mifosX.ng.application.controller('EditClientAddressController', ['$scope', '$rootScope','ResourceFactory', '$routeParams', '$location', mifosX.controllers.EditClientAddressController]).run(function ($log) {
+        $log.info("EditClientAddressController initialized");
     });
 }(mifosX.controllers || {}));
 ;(function (module) {
@@ -11883,6 +11932,56 @@
     });
     mifosX.ng.application.controller('ViewLoanCollateralController', ['$scope','ResourceFactory', '$routeParams', '$location', '$modal', mifosX.controllers.ViewLoanCollateralController]).run(function ($log) {
         $log.info("ViewLoanCollateralController initialized");
+    });
+}(mifosX.controllers || {}));
+;(function (module) {
+    mifosX.controllers = _.extend(module, {
+        ViewClientAddressController: function (scope, resourceFactory, routeParams, location, $modal) {
+
+            scope.formData = {};
+            
+            scope.clientId = routeParams.clientId;
+            scope.addressId = routeParams.id;
+
+
+            resourceFactory.clientAddressResource.get({ clientId: scope.clientId, id: scope.addressId}, function (data) {
+                scope.address = data;
+            });
+
+            resourceFactory.clientAddressTemplateResource.get({clientId: scope.clientId}, function (data) {
+                scope.allowedAddressTypes = data.allowedAddressTypes;
+                scope.formData.addressTypeId = data.allowedAddressTypes[0].id;
+                
+                scope.allowedStateTypes = data.allowedStateTypes;
+                
+                scope.formData.stateTypeId = data.allowedStateTypes[0].id;
+
+            });
+
+
+
+
+            scope.deleteAddress = function () {
+                $modal.open({
+                    templateUrl: 'deleteaddress.html',
+                    controller: AddressDeleteCtrl
+                });
+            };
+            var AddressDeleteCtrl = function ($scope, $modalInstance) {
+                $scope.delete = function () {
+                    resourceFactory.clientAddressResource.delete({  clientId: scope.clientId, id: scope.id}, {}, function (data) {
+                        $modalInstance.close('delete');
+                        location.path('/viewclient/' + scope.clientId);
+                    });
+                };
+                $scope.cancel = function () {
+                    $modalInstance.dismiss('cancel');
+                };
+            };
+        }
+    });
+    mifosX.ng.application.controller('ViewClientAddressController', ['$scope','ResourceFactory', '$routeParams', '$location', '$modal', mifosX.controllers.ViewClientAddressController]).run(function ($log) {
+        $log.info("ViewClientAddressController initialized");
     });
 }(mifosX.controllers || {}));
 ;(function (module) {

@@ -166,8 +166,14 @@
             .when('/loan/:loanId/editcollateral/:id', {
                 templateUrl: 'views/loans/editloancollateral.html'
             })
+            .when('/client/:clientId/editaddress/:id',{
+                templateUrl: 'views/clients/editclientaddress.html'
+            })
             .when('/loan/:loanId/viewcollateral/:id', {
                 templateUrl: 'views/loans/viewloancollateral.html'
+            })
+            .when('/client/:clientId/viewaddress/:id',{
+                templateUrl: 'views/clients/viewclientaddress.html'
             })
             .when('/loan/:loanId/viewcharge/:id', {
                 templateUrl: 'views/loans/viewloancharge.html'

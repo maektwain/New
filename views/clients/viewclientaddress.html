@@ -1,0 +1,74 @@
+<div ng-controller="ViewClientAddressController">
+    <div class="paddedbottom10">
+        <ul class="breadcrumb">
+            <li><a href="#/viewclient/{{clientId}}">{{'View Client' | translate}}</a></li>
+            <li class="active">{{ 'View Address' | translate}}({{address.addressType.name}})</li>
+        </ul>
+    </div>
+    <script type="text/ng-template" id="deleteaddress.html">
+        <div class="modal-header silver">
+            <h3 class="bolder">{{'label.heading.delete' | translate}}</h3>
+        </div>
+        <div class="modal-body">
+            <api-validate></api-validate>
+            <br>
+            <button class="btn btn-warning" ng-click="cancel()">{{'label.button.cancel' | translate}}</button>
+            <button class="btn btn-primary" ng-click="delete()">{{'label.button.confirm' | translate}}</button>
+        </div>
+    </script>
+    <div class="well">
+        <div class="pull-right">
+            <div class="btn-group">
+                <a href="#/client/{{clientId}}/editaddress/{{addressId}}" class="btn btn-primary" has-permission='UPDATE_CLIENT'><i
+                        class="icon-edit icon-white"></i> {{'label.button.edit' | translate}}</a>
+                <button type="button" ng-click="deleteAddress()" class="btn btn-danger" has-permission='DELETE_CLIENT'><i
+                        class="icon-trash icon-white"></i>{{'label.button.delete' | translate}}
+                </button>
+            </div>
+        </div>
+
+        <h3>{{'View Client Address' | translate}}</h3>
+        <table class="width100">
+            <tr>
+                <td class="width20">{{'label.heading.name' | translate}}</td>
+                <td class="width80">{{address.addressType.name}}</td>
+            </tr>
+            <tr>
+                <td>{{'Address Line One' | translate}}</td>
+                <td>{{address.address_line}}</td>
+            </tr>
+
+
+             <tr>
+                <td>{{'Address Line Two' | translate}}</td>
+                <td>{{address.address_line_two}}</td>
+
+            </tr>
+            <tr>
+               <td>{{'City' | translate}}</td>
+               <td>{{address.city}}</td>
+
+           </tr>
+
+            <tr>
+                <td>{{'Is Both' | translate}}</td>
+                <td>{{address.isBoth}}</td>
+
+            </tr>
+            <tr>
+                <td>{{'Landmark' | translate}}</td>
+                <td>{{address.landmark}}</td>
+            </tr>
+            <tr>
+                <td>{{'Pin Code'}}</td>
+                <td>{{address.pincode}}</td>
+            </tr>
+            <tr>
+                <td>{{'State'}}</td>
+                <td>{{address.stateType.name}}</td>
+            </tr>
+            
+        </table>
+      </div>
+    </div>
+</div>

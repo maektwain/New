@@ -222,7 +222,7 @@
 		        </thead>
 		        <tbody>
 		        <tr ng-repeat="address in addresses">
-								<td>{{address.addressType.name}}</td>
+								<td class="pointer" data-ng-click="viewClientAddress(address.id)">{{address.addressType.name}}</td>
 		            <td>{{address.address_line}}</td>
 		            <td>{{address.address_line_two}}</td>
 		            <td>{{address.city}}</td>

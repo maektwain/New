@@ -86,7 +86,8 @@
                         get: {method: 'GET', params: {}}
                     }),
                     clientAddressResource: defineResource(apiVer + "/clients/:clientId/addresses/:id", {clientId: '@clientId', id: '@id'},{
-                        get:{method: 'GET', params: {}}
+                        get:{method: 'GET', params: {}},
+                        put: {method: 'PUT', params: {}}
                     }),
                     groupResource: defineResource(apiVer + "/groups/:groupId/:anotherresource", {groupId: '@groupId', anotherresource: '@anotherresource'}, {
                         get: {method: 'GET', params: {}},
